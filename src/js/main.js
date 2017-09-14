@@ -1,8 +1,22 @@
 (function ($) {
 
 	var $window = $(window),
+		$html = $('html'),
 		$aboutMe = $('#about-me'),
-		$header = $('#header');
+		$header = $('#header'),
+		scrollWidth = function() {
+			var	windowWidth1,
+				windowWidth2,
+				scrollWidth;
+
+			windowWidth1 = $window.width();
+			$html.addClass('lock-test, lock-scroll');
+			windowWidth2 = $window.width();
+			$html.removeClass('lock-test');
+			scrollWidth = windowWidth2 - windowWidth1;
+			$html.css('margin-right', scrollWidth);
+			// $aboutMe.css('right', scrollWidth);
+		};
 
 	// Header Nav
 	$header.on('click', 'a', function(event) {
@@ -13,13 +27,12 @@
 			isActive = $this.hasClass('active');
 
 		if (!isActive) {
-			// $this.addClass('active').siblings().removeClass('active');
-
 			if (link == '#work') {
 				$('html, body').animate({'scrollTop': $('#projects').offset().top});
 			} else {
 				$aboutMe.fadeIn(function() {
 					$aboutMe.find('a').addClass('active');
+					scrollWidth();
 				});
 			}
 		}
@@ -58,6 +71,8 @@
 
 		$aboutMe.find('a').removeClass('active');
 		$aboutMe.fadeOut();
+		$html.removeClass('lock-scroll');
+		$html.removeAttr('style');
 	});
 
 	// Landing Animate
@@ -103,12 +118,16 @@
 				};
 
 			if (scroll > $window.height() * .5) {
+				$('#header').find('a').first().addClass('active');
+
 				if (!isAnimateIn) {
 					$projects.addClass('active');
 					$projectsNav.removeClass('animating-out').addClass('animating-in');
 					animateIn(0, 300);
 				}
 			} else {
+				$('#header').find('a').first().removeClass('active');
+
 				if (!isAnimateOut) {
 					$projectsNav.removeClass('animating-in').addClass('animating-out');
 					animateOut(navLength - 1, 300);

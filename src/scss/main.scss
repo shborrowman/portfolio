@@ -24,6 +24,17 @@ img {
 	max-width: 100%;
 	height: auto;
 }
+.lock-test {
+	overflow-y: hidden;
+}
+.lock-scroll {
+	overflow: visible;
+	width: auto;
+
+	body {
+		overflow: hidden;
+	}
+}
 
 /* Fonts */
 h1,
@@ -33,8 +44,6 @@ p {
 	margin: 0;
 }
 h2 {
-	// @include font-size(80px);
-	// font-size: 5vw;
 	@include vw(80px);
 	transition: $all;
 
@@ -129,6 +138,7 @@ a {
 #projects {
 	position: relative;
 	transition: $all;
+	
 	&.active {
 		padding-left: 344px;
 	}
@@ -223,6 +233,7 @@ a {
 	height: 100%;
 	background: $black;
 	padding: 0 15vw;
+	z-index: 5;
 
 	p {
 		@include font-size(40px);
