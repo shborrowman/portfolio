@@ -5,12 +5,11 @@
 /*
 * Global Styles
 */
-html {
-	background: $black;
+.container {
+	@include make-container;
 }
 .center {
 	margin: 0 auto;
-	padding: 0 $paddingWidth;
 	@include make-center;
 }
 .full-page {
@@ -18,7 +17,10 @@ html {
 }
 #main {
 	position: relative;
-	min-height: 200vh;
+
+	&.locked {
+		overflow: hidden;
+	}
 }
 img {
 	max-width: 100%;
@@ -34,6 +36,12 @@ img {
 	body {
 		overflow: hidden;
 	}
+}
+.section-block {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
 }
 
 /* Fonts */
@@ -85,33 +93,12 @@ a {
 			transition: $all;
 			transform: translateX(-50%);
 		}
-		&:hover {
-			&:after {
-				width: 50%;
-			}
-		}
 		&.active {
 			&:after {
 				width: 100%;
 			}
 		}
 	}
-	span {
-		position: absolute;
-		bottom: 100%;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		color: $black;
-	}
-}
-.mask {
-	position: absolute;
-	top: 100%;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
 }
 
 /*
@@ -119,16 +106,42 @@ a {
 */
 #landing {
 	&-section {
-		position: relative;
-		padding: 0 5vw;
-		background: $black url(#{$imagePath}code-image.png) top center/cover no-repeat;
+		background: $black url(#{$imagePath}code-image.png) top center/cover no-repeat {
+			attachment: fixed;
+		}
+		height: 100vh;
 		z-index: 2;
+		transition: height 0.9s cubic-bezier(0.63, 0.64, 0.3, 1);
+		overflow: hidden;
+
+		&.hide {
+			height: 0;
+		}
 	}
 
 	&-content {
 		display: flex;
 		align-items: center;
 		text-align: center;
+		transition: transform 0.9s cubic-bezier(0.63, 0.64, 0.3, 1);
+
+		.hide & {
+			transform: translateY(-100%);
+		}
+
+		h2 {
+			animation: animate-in .6s ease-out;
+			@keyframes animate-in {
+				from {
+					opacity: 0;
+					transform: translateY(100%);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+		}
 	}
 }
 
@@ -136,9 +149,8 @@ a {
 * Projects
 */
 #projects {
-	position: relative;
 	transition: $all;
-	
+
 	&.active {
 		padding-left: 344px;
 	}
@@ -153,7 +165,6 @@ a {
 		align-items: center;
 		height: 100%;
 		padding: 30px;
-		z-index: 3;
 	}
 
 	// Project Nav
@@ -167,6 +178,7 @@ a {
 			text-align: center;
 			padding: 24px 0;
 			transition: $all;
+			overflow: hidden;
 
 			& + a {
 				&:before {
@@ -182,19 +194,7 @@ a {
 					transition: $all;
 				}
 			}
-			&:hover {
-				color: $black;
-				text-shadow:
-					-1px -1px 0 $white,
-					1px -1px 0 $white,
-					-1px 1px 0 $white,
-					1px 1px 0 $white;
-			}
-			span {
-				transition: $all;
-				opacity: 0;
-				transform: translateY(50%);
-			}
+
 			&.animate-in {
 				& + a {
 					&:before {
@@ -203,38 +203,66 @@ a {
 						transform: translateX(0);
 					}
 				}
-				span {
+				.name {
 					opacity: 1;
 					transform: translateY(0);
 				}
 			}
+			&:hover {
+				.mask {
+					bottom: 0;
+				}
+				.bottom {
+					top: 0;
+				}
+			}
+		}
+		span {
+			display: inline-block;
+			transition: $all;
 		}
 	}
 
 	// Project Detail
 	&-detail {
-		padding: 100px 180px;
+		position: relative;
+		display: flex;
+		align-items: center;
+		padding: 100px get-vw(100px);
 		background: $offWhite;
 	}
+}
+.name {
+	opacity: 0;
+	transform: translateY(50%);
+}
+.mask,
+.bottom {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	color: $black;
+}
+.mask {
+	bottom: 100%;
+	overflow: hidden;
+}
+.bottom {
+	top: 100%;
+	color: red;
+	padding: 24px 0;
+}
+#tablet {
+	position: absolute;
+	bottom: 0;
+	right: 0;
 }
 
 /*
 * About Me
 */
 #about-me {
-	display: flex;
-	display: none;
-	align-items: center;
-	text-align: center;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: $black;
-	padding: 0 15vw;
-	z-index: 5;
-
 	p {
 		@include font-size(40px);
 	}
@@ -281,6 +309,25 @@ a {
 			margin-left: 0;
 			background: $white;
 			transition: all 0.3s ease-in-out 0.2s, transform 0.3s ease-in-out;
+		}
+	}
+
+	&-container {
+		display: flex;
+		align-items: center;
+		text-align: center;
+		padding: 0 15vw;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background: $black;
+		z-index: 5;
+		transition: transform 0.9s cubic-bezier(0.63, 0.64, 0.3, 1);
+		transform: translateY(100%);
+
+		&.active {
+			transform: translateY(0);
 		}
 	}
 }
